@@ -120,9 +120,10 @@ def process_loop():
         return
 
     LOG.info("checking if bootstrap can continue")
+    device = balena_get(f"/device?$filter=uuid eq '{device_uuid}'")
     service_vars = balena_get(
         "/device_service_environment_variable?$filter="
-        f"service_install/device eq {device_id} and name eq '{token_env_name}'"
+        f"service_install/device eq {device['id']} and name eq '{token_env_name}'"
     )
     if len(service_vars) != 1:
         LOG.error(
@@ -131,8 +132,7 @@ def process_loop():
         )
         return
 
-    device = balena_get(f"/device?$filter=uuid eq '{device_uuid}'")
-    balena_set_device_var(server_device["id"], "K3S_ROLE", "server")
+    balena_set_device_var(device["id"], "K3S_ROLE", "server")
     balena_set_fleet_var("K3S_ROLE", "agent")
     device_ip = device["id"]["ip_address"].split()[0]
     balena_set_fleet_var("K3S_URL", f"https://{device_ip}:6443")
