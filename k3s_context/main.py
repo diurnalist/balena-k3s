@@ -114,7 +114,7 @@ while True:
     if not k3s_role:
         LOG.info("no k3s role detected, checking if cluster is bootstrapped")
         fleet_devices = balena_get(
-            f"/device?\$filter=belongs_to__application%20eq%20{fleet_id}"
+            f"/device?$filter=belongs_to__application eq {fleet_id}"
         )
         devices_with_server_role = [
             var["device"]
