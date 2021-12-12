@@ -24,13 +24,15 @@ LOG.info(f"balena fleet_id={fleet_id}")
 balena_api_root = "https://api.balena-cloud.com/v6"
 
 
-def balena_get(path):
-    res = requests.get(
+def balena_req(path, method="get", **kwargs):
+    res = requests.request(
+        method,
         f"{balena_api_root}{path}",
         headers={
             "authorization": f"Bearer {api_token}",
             "content-type": "application/json",
         },
+        **kwargs,
     )
     res.raise_for_status()
     json = res.json()
@@ -41,7 +43,7 @@ def balena_get(path):
 def balena_set_device_var(device_id, name, value):
     existing_var = next(
         iter(
-            balena_get(
+            balena_req(
                 (
                     "/device_environment_variable?$filter="
                     f"device eq {device_id} and name eq '{name}'"
@@ -52,30 +54,30 @@ def balena_set_device_var(device_id, name, value):
     )
     if not existing_var:
         LOG.info(f"creating device var {name}={value}")
-        res = requests.post(
-            f"{balena_api_root}/device_environment_variable",
+        balena_req(
+            "/device_environment_variable",
+            method="post",
             json={
                 "device": device_id,
                 "name": name,
                 "value": value,
             },
         )
-        res.raise_for_status()
     elif existing_var["value"] != value:
         LOG.info(f"updating device var {name}={value}")
-        res = requests.patch(
-            f"{balena_api_root}/device_environment_variable({existing_var['id']})",
+        balena_req(
+            f"/device_environment_variable({existing_var['id']})",
+            method="patch",
             json={
                 "value": value,
             },
         )
-        res.raise_for_status()
 
 
 def balena_set_fleet_var(name, value):
     existing_var = next(
         iter(
-            balena_get(
+            balena_req(
                 (
                     "/application_environment_variable?$filter="
                     f"application eq {fleet_id} and name eq '{name}'"
@@ -86,24 +88,24 @@ def balena_set_fleet_var(name, value):
     )
     if not existing_var:
         LOG.info(f"creating fleet var {name}={value}")
-        res = requests.post(
-            f"{balena_api_root}/application_environment_variable",
+        balena_req(
+            "/application_environment_variable",
+            method="post",
             json={
                 "application": fleet_id,
                 "name": name,
                 "value": value,
             },
         )
-        res.raise_for_status()
     elif existing_var["value"] != value:
         LOG.info(f"updating fleet var {name}={value}")
-        res = requests.patch(
-            f"{balena_api_root}/application_environment_variable({existing_var['id']})",
+        balena_req(
+            f"/application_environment_variable({existing_var['id']})",
+            method="patch",
             json={
                 "value": value,
             },
         )
-        res.raise_for_status()
 
 
 LOG.info("entering wait loop")
@@ -120,8 +122,8 @@ def process_loop():
         return
 
     LOG.info("checking if bootstrap can continue")
-    device = balena_get(f"/device?$filter=uuid eq '{device_uuid}'")[0]
-    service_vars = balena_get(
+    device = balena_req(f"/device?$filter=uuid eq '{device_uuid}'")[0]
+    service_vars = balena_req(
         "/device_service_environment_variable?$filter="
         f"service_install/device eq {device['id']} and name eq '{token_env_name}'"
     )
