@@ -16,13 +16,17 @@ LOG = logging.getLogger("k3s_context")
 fleet_id = os.getenv("BALENA_APP_ID")
 fleet_name = os.getenv("BALENA_APP_NAME")
 device_uuid = os.getenv("BALENA_DEVICE_UUID")
-api_token = os.getenv("BALENA_API_TOKEN")
+api_token = os.getenv("BALENA_API_KEY")
 k3s_role = os.getenv("K3S_ROLE")
 
 LOG.info(f"balena fleet_id={fleet_id}, fleet_name={fleet_name}, device={device_uuid}")
 
 if fleet_id == "1":
     LOG.error("contextualization is not possible in local dev mode.")
+    sys.exit(1)
+
+if not api_token:
+    LOG.error("no api token detected, is the balena-api label on the container?")
     sys.exit(1)
 
 balena_api_root = "https://api.balena-cloud.com/v6"
