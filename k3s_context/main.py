@@ -120,7 +120,7 @@ def process_loop():
         return
 
     LOG.info("checking if bootstrap can continue")
-    device = balena_get(f"/device?$filter=uuid eq '{device_uuid}'")
+    device = balena_get(f"/device?$filter=uuid eq '{device_uuid}'")[0]
     service_vars = balena_get(
         "/device_service_environment_variable?$filter="
         f"service_install/device eq {device['id']} and name eq '{token_env_name}'"
