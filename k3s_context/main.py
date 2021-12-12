@@ -136,7 +136,7 @@ def process_loop():
 
     balena_set_device_var(device["id"], "K3S_ROLE", "server")
     balena_set_fleet_var("K3S_ROLE", "agent")
-    device_ip = device["id"]["ip_address"].split()[0]
+    device_ip = device["ip_address"].split()[0]
     balena_set_fleet_var("K3S_URL", f"https://{device_ip}:6443")
     try:
         with open("/var/lib/rancher/k3s/server/node-token", "r") as f:
