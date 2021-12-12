@@ -43,7 +43,7 @@ def balena_set_device_var(device_id, name, value):
         iter(
             balena_get(
                 (
-                    f"{balena_api_root}/device_environment_variable?$filter="
+                    "/device_environment_variable?$filter="
                     f"device eq {device_id} and name eq '{name}'"
                 )
             )
@@ -77,7 +77,7 @@ def balena_set_fleet_var(name, value):
         iter(
             balena_get(
                 (
-                    f"{balena_api_root}/application_environment_variable?$filter="
+                    "/application_environment_variable?$filter="
                     f"application eq {fleet_id} and name eq '{name}'"
                 )
             )

@@ -25,6 +25,8 @@ declare -a cmd=(k3s)
 case "${K3S_ROLE:-}" in
   server)
     cmd+=(server)
+    cmd+=(--kubelet-arg=cgroup-driver=systemd)
+    cmd+=(--kubelet-arg=volume-plugin-dir=/opt/libexec/kubernetes/kubelet-plugins/volume/exec)
     ;;
   agent)
     if [ -z "${K3S_TOKEN:-}" ]; then
