@@ -22,7 +22,7 @@ if [ -z "${K3S_URL:-}" ]; then
 fi
 
 declare -a cmd=(k3s)
-case "${K3S_ROLE:-agent}" in
+case "${K3S_ROLE:-}" in
   server)
     cmd+=(server)
     ;;
