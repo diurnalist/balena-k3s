@@ -43,7 +43,7 @@ def balena_set_device_var(device_id, name, value):
         iter(
             balena_get(
                 (
-                    "/device_environment_variable?$filter="
+                    f"{balena_api_root}/device_environment_variable?$filter="
                     f"device eq {device_id} and name eq '{name}'"
                 )
             )
@@ -53,7 +53,7 @@ def balena_set_device_var(device_id, name, value):
     if not existing_var:
         LOG.info(f"creating device var {name}={value}")
         res = requests.post(
-            "/device_environment_variable",
+            f"{balena_api_root}/device_environment_variable",
             json={
                 "device": device_id,
                 "name": name,
@@ -64,7 +64,7 @@ def balena_set_device_var(device_id, name, value):
     elif existing_var["value"] != value:
         LOG.info(f"updating device var {name}={value}")
         res = requests.patch(
-            f"/device_environment_variable({existing_var['id']})",
+            f"{balena_api_root}/device_environment_variable({existing_var['id']})",
             json={
                 "value": value,
             },
@@ -77,7 +77,7 @@ def balena_set_fleet_var(name, value):
         iter(
             balena_get(
                 (
-                    "/application_environment_variable?$filter="
+                    f"{balena_api_root}/application_environment_variable?$filter="
                     f"application eq {fleet_id} and name eq '{name}'"
                 )
             )
@@ -87,7 +87,7 @@ def balena_set_fleet_var(name, value):
     if not existing_var:
         LOG.info(f"creating fleet var {name}={value}")
         res = requests.post(
-            "/application_environment_variable",
+            f"{balena_api_root}/application_environment_variable",
             json={
                 "application": fleet_id,
                 "name": name,
@@ -98,7 +98,7 @@ def balena_set_fleet_var(name, value):
     elif existing_var["value"] != value:
         LOG.info(f"updating fleet var {name}={value}")
         res = requests.patch(
-            f"/application_environment_variable({existing_var['id']})",
+            f"{balena_api_root}/application_environment_variable({existing_var['id']})",
             json={
                 "value": value,
             },
