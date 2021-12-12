@@ -1,0 +1,47 @@
+---
+version: "2.1"
+
+services:
+  k3s:
+    build: ./k3s
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 65535
+        hard: 65535
+    privileged: true
+    network_mode: host
+    #pid: host
+    tmpfs:
+      - /run/k3s
+      - /run/containerd
+      # For Calico
+      - /run/calico
+      - /run/nodeagent
+    restart: always
+    volumes:
+      - k3s_data_dir:/var/lib/rancher/k3s
+      # For Calico
+      - calico_data_dir:/var/lib/calico
+      - k3s_flexvol:/opt/libexec/kubernetes/kubelet-plugins/volume/exec
+    environment:
+      - DBUS_SYSTEM_BUS_ADDRESS=unix:path=/host/run/dbus/system_bus_socket
+    labels:
+      io.balena.features.balena-socket: "1"
+      #io.balena.features.procfs: "1"
+      #io.balena.features.sysfs: "1"
+      io.balena.features.dbus: "1"
+    depends_on:
+      - k3s_context
+
+  k3s_context:
+    build: ./k3s_context
+    volumes:
+      - k3s_data_dir:/var/lib/rancher/k3s
+    labels:
+      io.balena.features.balena-api: '1'
+
+volumes:
+  k3s_data_dir: {}
+  calico_data_dir: {}
+  k3s_flexvol: {}

@@ -1,0 +1,45 @@
+FROM balenalib/%%BALENA_MACHINE_NAME%%:build as build
+
+ARG K3S_VERSION=v1.22.3%2Bk3s1
+
+COPY install-k3s.sh /docker/install-k3s.sh
+RUN /docker/install-k3s.sh %%BALENA_ARCH%%
+
+FROM balenalib/%%BALENA_MACHINE_NAME%%:run as run
+
+#################
+# Setup Systemd
+#################
+ENV container docker
+RUN install_packages systemd-sysv
+
+# We never want these to run in a container
+# Feel free to edit the list but this is the one we used
+RUN systemctl mask \
+    dev-hugepages.mount \
+    sys-fs-fuse-connections.mount \
+    sys-kernel-config.mount \
+    display-manager.service \
+    getty@.service \
+    systemd-logind.service \
+    systemd-remount-fs.service \
+    getty.target \
+    graphical.target
+
+COPY balena.service /etc/systemd/system/balena.service
+
+RUN systemctl enable /etc/systemd/system/balena.service
+
+STOPSIGNAL 37
+ENV INITSYSTEM on
+######################
+# Finish setup systemd
+######################
+
+COPY --from=build /usr/local/bin/k3s /usr/local/bin/k3s
+
+COPY entrypoint.sh /docker/entrypoint.sh
+ENTRYPOINT ["/docker/entrypoint.sh"]
+
+COPY start.sh /docker/start.sh
+CMD ["/docker/start.sh"]
