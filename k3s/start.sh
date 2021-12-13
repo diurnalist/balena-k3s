@@ -26,6 +26,7 @@ case "${K3S_ROLE:-}" in
   server)
     unset K3S_TOKEN
     cmd+=(server)
+    cmd+=(--docker)
     cmd+=(--kubelet-arg=cgroup-driver=systemd)
     cmd+=(--kubelet-arg=volume-plugin-dir=/opt/libexec/kubernetes/kubelet-plugins/volume/exec)
     ;;
@@ -35,6 +36,7 @@ case "${K3S_ROLE:-}" in
       exit 1
     fi
     cmd+=(agent)
+    cmd+=(--docker)
     cmd+=(--kubelet-arg=cgroup-driver=systemd)
     cmd+=(--kubelet-arg=cgroups-per-qos=false)
     cmd+=(--kubelet-arg=enforce-node-allocatable=)
