@@ -29,7 +29,7 @@ services:
     labels:
       io.balena.features.balena-socket: "1"
       #io.balena.features.procfs: "1"
-      #io.balena.features.sysfs: "1"
+      io.balena.features.sysfs: "1"
       io.balena.features.dbus: "1"
     depends_on:
       - k3s_context
