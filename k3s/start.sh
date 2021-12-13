@@ -4,14 +4,10 @@ set -o nounset
 
 # Balena will mount a socket and set DOCKER_HOST to
 # point to the socket path.
-# if [ -n "${DOCKER_HOST:-}" ]; then
-#   echo "Shimming $DOCKER_HOST socket"
-#   # for containerd
-#   mkdir -p /run/k3s/containerd
-#   ln -sf "${DOCKER_HOST##unix://}" /run/k3s/containerd/containerd.sock
-#   # for Docker, if used instead
-#   ln -sf "${DOCKER_HOST##unix://}" /var/run/docker.sock
-# fi
+if [ -n "${DOCKER_HOST:-}" ]; then
+  echo "Shimming $DOCKER_HOST socket"
+  ln -sf "${DOCKER_HOST##unix://}" /var/run/docker.sock
+fi
 
 #echo "Setting net.ipv4.ip_forward=1"
 #echo 1>/proc/sys/net/ipv4/ip_forward
