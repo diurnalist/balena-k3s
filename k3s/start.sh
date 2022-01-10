@@ -9,8 +9,8 @@ if [ -n "${DOCKER_HOST:-}" ]; then
   ln -sf "${DOCKER_HOST##unix://}" /var/run/docker.sock
 fi
 
-#echo "Setting net.ipv4.ip_forward=1"
-#echo 1>/proc/sys/net/ipv4/ip_forward
+echo "Setting net.ipv4.ip_forward=1"
+echo 1>/proc/sys/net/ipv4/ip_forward
 
 if [ -z "${K3S_URL:-}" ]; then
   echo "no K3S_URL variable set for device"
@@ -22,7 +22,6 @@ case "${K3S_ROLE:-}" in
   server)
     unset K3S_TOKEN
     cmd+=(server)
-    cmd+=(--docker)
     cmd+=(--kubelet-arg=cgroup-driver=systemd)
     cmd+=(--kubelet-arg=volume-plugin-dir=/opt/libexec/kubernetes/kubelet-plugins/volume/exec)
     ;;
@@ -32,7 +31,6 @@ case "${K3S_ROLE:-}" in
       exit 1
     fi
     cmd+=(agent)
-    cmd+=(--docker)
     cmd+=(--kubelet-arg=cgroup-driver=systemd)
     cmd+=(--kubelet-arg=cgroups-per-qos=false)
     cmd+=(--kubelet-arg=enforce-node-allocatable=)
